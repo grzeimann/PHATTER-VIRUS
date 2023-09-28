@@ -16,7 +16,6 @@ sys.path.append("..")
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-from skimage.registration import phase_cross_correlation
 from astropy.time import Time
 from astropy.io import fits
 from multiprocessing import Pool
@@ -45,6 +44,45 @@ def setup_logging(logname='input_utils'):
         log.setLevel(logging.DEBUG)
         log.addHandler(handler)
     return log
+
+def get_calibration_exposures(Obj_row, Obj_Table, cal='Hg', 
+                              time_constraint=2.):
+    '''
+    
+
+    Parameters
+    ----------
+    Obj_row : astropy.table.Table row
+        Row for the science observation
+    Obj_Table : astropy.table.Table
+        Table of the observations over a date range
+    cal : str, optional
+        Calibration or observation to link to science. The default is 'Hg'.
+    time_constraint : float, optional
+        Time window in hours. The default is 2..
+
+    Returns
+    -------
+    output_list : TYPE
+        DESCRIPTION.
+
+    '''
+    keys = list([str(t) for t in Obj_Table['Exposure']])
+    values = list(Obj_Table['Description'])
+    
+    time_obs = Time(str(Obj_row['Date']))
+    date_list = [Time(str(row['Date'])) for row in Obj_Table]
+    
+    time_diffs = [cal_time - time_obs for cal_time in date_list]
+    
+    cal_obs = []
+    for key, value, time_diff in zip(keys, values, time_diffs):
+        if value == cal:
+            if np.abs(time_diff.value * 24.) < time_constraint:
+                cal_obs.append(key)
+    
+    
+    return cal_obs
 
 warnings.filterwarnings("ignore")
 
@@ -88,6 +126,8 @@ LDLS_obs = [key for key, value in zip(keys, values) if value == 'ldls_long']
 
 line_list = [3610.508, 4046.565, 4358.335, 4678.149, 4799.912,
                       4916.068, 5085.822, 5460.750]
+
+
 
 thresh = 150.
 
