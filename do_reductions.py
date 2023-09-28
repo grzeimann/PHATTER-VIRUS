@@ -57,8 +57,8 @@ def setup_logging(logname='input_utils'):
         log.addHandler(handler)
     return log
 
-def get_calibration_exposures(Obj_row, Obj_Table, cal='Hg', 
-                              time_constraint=2.):
+def find_calibration_exposures(Obj_row, Obj_Table, cal='Hg', 
+                               time_constraint=2.):
     '''
     
 
