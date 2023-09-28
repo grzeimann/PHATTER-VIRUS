@@ -22,6 +22,18 @@ from multiprocessing import Pool
 
 from virusraw import VIRUSRaw
 
+# =============================================================================
+# Warning Suppression: good for clarity, bad for debugging
+# =============================================================================
+warnings.filterwarnings("ignore")
+
+# =============================================================================
+# Plotting hacks
+# =============================================================================
+sns.set_context('talk')
+sns.set_style('ticks')
+plt.rcParams["font.family"] = "Times New Roman"
+
 
 def setup_logging(logname='input_utils'):
     '''Set up a logger for shuffle with a name ``input_utils``.
@@ -84,8 +96,6 @@ def get_calibration_exposures(Obj_row, Obj_Table, cal='Hg',
     
     return cal_obs
 
-warnings.filterwarnings("ignore")
-
 
 parser = ap.ArgumentParser(add_help=True)
 
@@ -97,41 +107,54 @@ parser.add_argument('hdf5file', type=str,
 
 parser.add_argument('outname', type=str,
                     help='''name appended to shift output''')
+
+parser.add_argument('--basedir', type=str,
+                    help='''name appended to shift output''',
+                    default='/work/03946/hetdex/maverick')
+
+# =============================================================================
+# Get Arguments from parser and setup logging
+# =============================================================================
 args = parser.parse_args(args=None)
 args.log = setup_logging('get_object_table')
 
+# =============================================================================
+# Hard coding for the VIRUS rectified wavelengths
+# =============================================================================
 def_wave = np.linspace(3470, 5540, 1036)
 
-sns.set_context('talk')
-sns.set_style('ticks')
-plt.rcParams["font.family"] = "Times New Roman"
 
-basedir = '/work/03946/hetdex/maverick'
+# =============================================================================
+# Load the *.h5 calibration table
+# =============================================================================
+basedir = args.basedir
 hdf5file = args.hdf5file
+
 h5file = tables.open_file(hdf5file, mode='r')
 h5table = h5file.root.Cals
+
+# =============================================================================
+# Get all of the ifuslot numbers from the calibration table
+# =============================================================================
 ifuslots = list(np.unique(['%03d' % i for i in h5table.cols.ifuslot[:]]))
-ifuslots = ifuslots
+
+# =============================================================================
+# Get the table of observations
+# =============================================================================
 T = Table.read(args.object_table, format='ascii.fixed_width_two_line')
 
 keys = list([str(t) for t in T['Exposure']])
 values = list(T['Description'])
+
+sci_obs = [key for key, value in zip(keys, values) if value == 'm33']
+
+
 
 twi_obs = [key for key, value in zip(keys, values) if value == 'skyflat']
 CdA_obs = [key for key, value in zip(keys, values) if value == 'Cd-A']
 Hg_obs = [key for key, value in zip(keys, values) if value == 'Hg']
 Dark_obs = [key for key, value in zip(keys, values) if value == 'dark']
 LDLS_obs = [key for key, value in zip(keys, values) if value == 'ldls_long']
-
-
-line_list = [3610.508, 4046.565, 4358.335, 4678.149, 4799.912,
-                      4916.068, 5085.822, 5460.750]
-
-
-
-thresh = 150.
-
-arc_list = CdA_obs + Hg_obs
 
 date = arc[:8]
 obs = int(arc[8:15])
