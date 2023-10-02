@@ -132,7 +132,7 @@ class VIRUSRaw:
             # Basic reduction
             array_flt1, e1, header = base_reduction(fname, tarfolder=tarfolder,
                                                     get_header=True)
-            self.info[ifuslot] = self.ChannelInfo(ifuslot, h5table, header,
+            self.info[ifuslot] = self.ChannelInfo(ifuslot, h5table, header, self.log,
                                                   amp_list=self.amporder)
             self.log.info('Masking pixels')
             self.mask_from_ldls(ifuslot)
@@ -171,7 +171,7 @@ class VIRUSRaw:
     
     class ChannelInfo:
         # Create channel info
-        def __init__(self, ifuslot, h5table, header,
+        def __init__(self, ifuslot, h5table, header, log,
                      amp_list=['RU', 'RL', 'LL', 'LU']):
             '''
             
@@ -226,6 +226,7 @@ class VIRUSRaw:
                             (np.max(image_list[-1]) > 1030)):
                             self.trace_flag[cnt] = True
                             image_list[-1][:] = 512 * np.ones((1032,))
+                            log.info('Trace failed for %s_%s_%s_%s' % (specids[ind], ifuslots[ind], ifuids[ind], amps[ind]))
                         image_list[-1] = image_list[-1] + cnt * 1032
                         cnt += 1
                 image = np.vstack(image_list)
