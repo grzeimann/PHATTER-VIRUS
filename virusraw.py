@@ -132,8 +132,12 @@ class VIRUSRaw:
             # Basic reduction
             array_flt1, e1, header = base_reduction(fname, tarfolder=tarfolder,
                                                     get_header=True)
-            self.info[ifuslot] = self.ChannelInfo(ifuslot, h5table, header, self.log,
-                                                  amp_list=self.amporder)
+            try:
+                self.info[ifuslot] = self.ChannelInfo(ifuslot, h5table, header, self.log,
+                                                      amp_list=self.amporder)
+            except:
+                self.log.warning("Can't get calibration information for %s" % ifuslot)
+                continue
             self.log.info('Masking pixels')
             self.mask_from_ldls(ifuslot)
             self.log.info('Reducing ifuslot')
