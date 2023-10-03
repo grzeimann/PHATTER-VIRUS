@@ -95,7 +95,6 @@ def get_dark(dark):
     exp = int(dark[15:])
     virus = VIRUSRaw(date, obs, h5table, basepath=basedir, exposure_number=exp,
                      ifuslots=ifuslots)
-    dark_models
     dark_dictionary = {}
     for ifuslot in ifuslots:
         dark_dictionary[ifuslot] = np.zeros((448, 1036))
