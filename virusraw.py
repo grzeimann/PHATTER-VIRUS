@@ -141,8 +141,12 @@ class VIRUSRaw:
             self.log.info('Masking pixels')
             self.mask_from_ldls(ifuslot)
             self.log.info('Reducing ifuslot')
-            self.reduce_channel(fname, ifuslot, tarfolder=tarfolder, 
-                                amp_list=self.amporder)
+            try:
+                self.reduce_channel(fname, ifuslot, tarfolder=tarfolder, 
+                                    amp_list=self.amporder)
+            except Exception as error:
+                self.log.warning("Reduction failed for %s because: %s, %s" (ifuslot, type(error).__name__, error))
+                continue
             self.info[ifuslot].filename = name % (date, observation_number,
                                                   expstr, ifuslot)
             self.info[ifuslot].date = date
