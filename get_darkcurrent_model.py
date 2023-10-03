@@ -113,7 +113,7 @@ def get_dark(dark):
         for chunk in np.array_split(current_observation, nchunks, axis=1):
             Z[:, i] = np.nanmedian(chunk, axis=1)
             i += 1
-        image = avg * 0.
+        image = current_observation * 0.
         for ind in np.arange(Z.shape[0]):
             p0 = np.polyfit(xi, Z[ind], 4)
             model = np.polyval(p0, x)
