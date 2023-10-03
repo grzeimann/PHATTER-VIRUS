@@ -98,9 +98,13 @@ def get_dark(dark):
     dark_models
     dark_dictionary = {}
     for ifuslot in ifuslots:
-        dark_dictionary[ifuslot] = 0.0
-    for ifuslot in ifuslots:  
-        current_observation = virus.info[ifuslot].data
+        dark_dictionary[ifuslot] = np.zeros((448, 1036))
+    for ifuslot in ifuslots:
+        try:
+            current_observation = virus.info[ifuslot].data
+        except:
+            args.log.warning('Could not get dark current measurement for %s_%s' % (dark, ifuslot))
+            continue
         nchunks = 14
         nfib, ncols = virus.info[ifuslot].data.shape
         Z = np.zeros((nfib, nchunks))
