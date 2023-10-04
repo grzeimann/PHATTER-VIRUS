@@ -87,12 +87,7 @@ def base_reduction(filename, tarfolder=None, get_header=False,
     # Load fits file
     if tarfolder is not None:
         T = tarfile.open(tarfolder, 'r')
-        try:
-            a = fits.open(T.extractfile('/'.join(filename.split('/')[-4:])))
-        except:
-            if log is not None:
-                log.warning('Could not open %s' % ('/'.join(filename.split('/')[-4:])))
-            return None
+        a = fits.open(T.extractfile('/'.join(filename.split('/')[-4:])))
     else:
         a = fits.open(filename)
 
