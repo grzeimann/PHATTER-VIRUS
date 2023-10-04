@@ -130,8 +130,12 @@ class VIRUSRaw:
             self.log.info('Loading calibration information')
             
             # Basic reduction
-            array_flt1, e1, header = base_reduction(fname, tarfolder=tarfolder,
-                                                    get_header=True)
+            try:
+                array_flt1, e1, header = base_reduction(fname, tarfolder=tarfolder,
+                                                        get_header=True)
+            except:
+                self.log.warning("Couldn't open %s" % fname)
+                continue
             try:
                 self.info[ifuslot] = self.ChannelInfo(ifuslot, h5table, header, self.log,
                                                       amp_list=self.amporder)
