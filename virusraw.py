@@ -144,8 +144,8 @@ class VIRUSRaw:
             try:
                 self.reduce_channel(fname, ifuslot, tarfolder=tarfolder, 
                                     amp_list=self.amporder)
-            except Exception as error:
-                self.log.warning("Reduction failed for %s because: %s, %s" (ifuslot, type(error).__name__, error))
+            except:
+                self.log.warning("Reduction failed for %s" (ifuslot))
                 continue
             self.info[ifuslot].filename = name % (date, observation_number,
                                                   expstr, ifuslot)
