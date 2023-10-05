@@ -121,7 +121,7 @@ def get_qe(ldls, bins=25):
     obs = int(twi[8:15])
     exp = int(twi[15:])
     virus = VIRUSRaw(date, obs, h5table, basepath=basedir, exposure_number=exp,
-                     ifuslots=ifuslots)rray_split(wave, bins)])
+                     ifuslots=ifuslots)
     ldls_dictionary = {}
     for ifuslot in ifuslots:
         qe_from_ldls(virus, ifuslot)
