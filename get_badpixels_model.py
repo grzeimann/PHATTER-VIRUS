@@ -117,9 +117,9 @@ ldls_obs = [key for key, value in zip(keys, values) if value == 'ldls_long']
 ldls_list = ldls_obs
 
 def get_qe(ldls, bins=25):
-    date = twi[:8]
-    obs = int(twi[8:15])
-    exp = int(twi[15:])
+    date = ldls[:8]
+    obs = int(ldls[8:15])
+    exp = int(ldls[15:])
     virus = VIRUSRaw(date, obs, h5table, basepath=basedir, exposure_number=exp,
                      ifuslots=ifuslots)
     ldls_dictionary = {}
