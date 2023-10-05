@@ -108,7 +108,7 @@ def get_fibernorm(twi, bins=25):
     binned_spec = np.ones((448 * len(ifuslots), bins)) * np.nan
     ftf = np.nan * allspec
     for i in np.arange(allspec.shape[0]):
-        s = np.array([np.nanmedian(xi) for xi in np.array_split(allpsec[i], bins)])
+        s = np.array([np.nanmedian(xi) for xi in np.array_split(allspec[i], bins)])
         sel = np.isfinite(s)
         if sel.sum() > (bins-5):
             ftf[i] = interp1d(w[sel], s[sel], kind='quadratic', fill_value='extrapolate')
