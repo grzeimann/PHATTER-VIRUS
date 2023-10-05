@@ -22,7 +22,7 @@ from astropy.io import fits
 from multiprocessing import Pool
 from scipy.interpolate import interp1d
 from virusraw import VIRUSRaw
-from scipy.signal import medfil
+from scipy.signal import medfilt
 
 def qe_from_ldls(self, ifuslot, niter=3, filter_length=11,
                        sigma=5, badcolumnthresh=300):
