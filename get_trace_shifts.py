@@ -82,6 +82,9 @@ values = list(T['Description'])
 twi_obs = [key for key, value in zip(keys, values) if value == 'skyflat']
 LDLS_obs = [key for key, value in zip(keys, values) if value == 'ldls_long']
 
+x_list = [100., 300., 500., 700., 900.]
+thresh = 150.
+
 flt_list = LDLS_obs
 
 def get_shift(flt):
@@ -97,13 +100,19 @@ def get_shift(flt):
         monthly_average = virus.info[ifuslot].masterflt * 1.
         current_observation = virus.info[ifuslot].image * 1.
         current_observation[np.isnan(current_observation)] = 0.0
-        shifts = np.ones((current_observation.shape[0], len(line_list))) * np.nan
+        trace = virus.info[ifuslot].trace * 1.
+        shifts = np.ones((current_observation.shape[0], len(x_list))) * np.nan
+        yran = np.arange(current_observation.shape[0])
+        xran = np.arange(current_observation.shape[1])
         for fiber in np.arange(current_observation.shape[0]):
-            fit_waves = [np.abs(virus.info[ifuslot].wavelength[fiber] - line) <= 20. for line in line_list]
+            fit_waves = [np.abs(virus.info[ifuslot].wavelength[fiber] - line) <= 20. for line in x_list]
             for j, waverange in enumerate(fit_waves):
-                if np.nanmax(current_observation[fiber, waverange]) > thresh:
-                    FFT = phase_cross_correlation(current_observation[fiber, waverange][np.newaxis, :],
-                                                  monthly_average[fiber, waverange][np.newaxis, :], 
+                trace_range = np.abs(trace[fiber, int(x_list[j])] - yran) < 4.
+                X = np.nanmedian(current_observation[:, waverange], axis=1)
+                Y = np.nanmedian(monthly_average[:, waverange], axis=1)
+                if np.nanmax(X[trace_range]) > thresh:
+                    FFT = phase_cross_correlation(X[trace_range][np.newaxis, :],
+                                                  Y[trace_range][np.newaxis, :], 
                                                   normalization=None, upsample_factor=100)
                     shifts[fiber, j] = FFT[0][1]
         shift_dictionary[ifuslot] = shifts
@@ -115,18 +124,18 @@ def get_shift(flt):
 
 
 P = Pool(16)
-res = P.map(get_shift, arc_list)
+res = P.map(get_shift, flt_list)
 P.close()
 shift_dictionary = {}
 for ifuslot in ifuslots:
-    shift_dictionary[ifuslot] = np.nan * np.ones((len(arc_list), 448, len(line_list)))
+    shift_dictionary[ifuslot] = np.nan * np.ones((len(flt_list), 448, len(x_list)))
 for ifuslot in ifuslots:  
     shift_dictionary[ifuslot] = [r[0][ifuslot] for r in res]
 time_list = [r[1] for r in res]
 hum_list = [r[2] for r in res]
 temp_list = [r[3] for r in res]
 for ifuslot in ifuslots:
-    name = 'wavelength_shifts_%s_%s.fits' % (ifuslot, args.outname)
+    name = 'trace_shifts_%s_%s.fits' % (ifuslot, args.outname)
     f  = fits.HDUList([fits.PrimaryHDU(), fits.ImageHDU(shift_dictionary[ifuslot]),
                        fits.ImageHDU(np.array([t.mjd for t in time_list])),
                        fits.ImageHDU(np.array([t for t in hum_list])),
