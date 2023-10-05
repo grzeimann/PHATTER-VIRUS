@@ -124,8 +124,12 @@ def get_qe(ldls, bins=25):
                      ifuslots=ifuslots)
     ldls_dictionary = {}
     for ifuslot in ifuslots:
-        qe_from_ldls(virus, ifuslot)
-        ldls_dictionary[ifuslot] = virus.info[ifuslot].qe
+        try:
+            qe_from_ldls(virus, ifuslot)
+            ldls_dictionary[ifuslot] = virus.info[ifuslot].qe
+            virus.log.warning('Failed to get QE for %s' ifuslot)
+        except:
+            ldls_dictionary[ifuslot] = np.zeros((448, 1036))
     timeobs = Time(virus.info[ifuslot].header['DATE'])
     virus.log.info('Shifts finished %s_%07d_exp%02d' % (date, obs, exp))
     return ldls_dictionary, timeobs
