@@ -127,7 +127,7 @@ def get_qe(ldls, bins=25):
         try:
             qe_from_ldls(virus, ifuslot)
             ldls_dictionary[ifuslot] = virus.info[ifuslot].qe
-            virus.log.warning('Failed to get QE for %s' ifuslot)
+            virus.log.warning('Failed to get QE for %s' % ifuslot)
         except:
             ldls_dictionary[ifuslot] = np.zeros((448, 1036))
     timeobs = Time(virus.info[ifuslot].header['DATE'])
