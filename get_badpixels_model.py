@@ -140,7 +140,7 @@ for ifuslot in ifuslots:
     ldls_dictionary[ifuslot] = [r[0][ifuslot] for r in res]
 time_list = [r[1] for r in res]
 for ifuslot in ifuslots:
-    name = 'fibernormalization_model_%s_%s.fits' % (ifuslot, args.outname)
+    name = 'badpixels_model_%s_%s.fits' % (ifuslot, args.outname)
     f  = fits.HDUList([fits.PrimaryHDU(), fits.ImageHDU(ldls_dictionary[ifuslot]),
                        fits.ImageHDU(np.array([t.mjd for t in time_list]))])
     f.writeto(name, overwrite=True)
