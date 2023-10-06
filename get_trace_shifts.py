@@ -96,9 +96,12 @@ def get_shift(flt):
     shift_dictionary = {}
     for ifuslot in ifuslots:
         shift_dictionary[ifuslot] = np.nan * np.ones((448, len(line_list)))
-    for ifuslot in ifuslots:  
-        monthly_average = virus.info[ifuslot].masterflt * 1.
-        current_observation = virus.info[ifuslot].image * 1.
+    for ifuslot in ifuslots:
+        try:
+            monthly_average = virus.info[ifuslot].masterflt * 1.
+            current_observation = virus.info[ifuslot].image * 1.
+        except:
+            virus.log.warning("Can't calculate shift for %s" % ifuslot)
         current_observation[np.isnan(current_observation)] = 0.0
         trace = virus.info[ifuslot].trace * 1.
         shifts = np.ones((current_observation.shape[0], len(x_list))) * np.nan
