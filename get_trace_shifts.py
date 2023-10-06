@@ -102,6 +102,7 @@ def get_shift(flt):
             current_observation = virus.info[ifuslot].image * 1.
         except:
             virus.log.warning("Can't calculate shift for %s" % ifuslot)
+            continue
         current_observation[np.isnan(current_observation)] = 0.0
         trace = virus.info[ifuslot].trace * 1.
         shifts = np.ones((current_observation.shape[0], len(x_list))) * np.nan
