@@ -111,7 +111,7 @@ def get_fibernorm(twi, bins=25):
         s = np.array([np.nanmedian(xi) for xi in np.array_split(allspec[i], bins)])
         sel = np.isfinite(s)
         if sel.sum() > (bins-5):
-            ftf[i] = interp1d(w[sel], s[sel], kind='quadratic', fill_value='extrapolate')(wave)
+            ftf[i] = interp1d(w[sel], s[sel] / avgi[sel], kind='quadratic', fill_value='extrapolate')(wave)
     cnt = 0
     for ifuslot in ifuslots:
         twi_dictionary[ifuslot] = ftf[cnt:cnt+448]
