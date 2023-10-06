@@ -102,9 +102,13 @@ def get_shift(arc):
     shift_dictionary = {}
     for ifuslot in ifuslots:
         shift_dictionary[ifuslot] = np.nan * np.ones((448, len(line_list)))
-    for ifuslot in ifuslots:  
-        monthly_average = virus.info[ifuslot].lampspec * 1.
-        current_observation = virus.info[ifuslot].orig * 1.
+    for ifuslot in ifuslots: 
+        try:
+            monthly_average = virus.info[ifuslot].lampspec * 1.
+            current_observation = virus.info[ifuslot].orig * 1.
+        except:
+            virus.log.warning("Can't measure shift for %s" %ifuslot)
+            continue
         current_observation[np.isnan(current_observation)] = 0.0
         shifts = np.ones((current_observation.shape[0], len(line_list))) * np.nan
         for fiber in np.arange(current_observation.shape[0]):
