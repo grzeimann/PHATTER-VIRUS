@@ -97,10 +97,11 @@ def get_fibernorm(twi, bins=25):
         try:
             current_observation = virus.info[ifuslot].data
             allspec[cnt:cnt+448] = current_observation
+            cnt += 448
         except:
             args.log.warning('Could not get data for %s_%s' % (twi, ifuslot))
+            cnt += 448
             continue
-        cnt += 448
     wave = np.linspace(3470, 5540, 1036)
     avg = np.nanmedian(allspec, axis=0)
     avgi = np.array([np.nanmedian(xi) for xi in np.array_split(avg, bins)])
