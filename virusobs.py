@@ -132,7 +132,9 @@ class VIRUSObs:
             
             T[li:hi] = twidata
             E[li:hi] = twidatae
-    
+
+        T[np.isnan(T)] = 0.0
+        E[np.isnan(E)] = 0.0
         ftf, mask = get_fiber_to_fiber(T, E, wave)
         medvals = np.nanmedian(ftf, axis=1)
         mask = medvals < low_thresh
