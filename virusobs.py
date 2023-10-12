@@ -84,7 +84,7 @@ class VIRUSObs:
         ########################################################################
         # Correct wavelength default to the lamps taken that night
         ########################################################################
-        self.get_wave_correction()
+        #self.get_wave_correction()
         
         ########################################################################
         # Subtract Sky
