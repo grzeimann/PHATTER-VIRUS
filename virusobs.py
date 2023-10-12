@@ -149,12 +149,16 @@ class VIRUSObs:
                     y.append(ldls.info[ifuslot].data / ftf[li:hi])
                 avg = np.nanmedian(y, axis=0)
                 avg[np.isnan(avg)] = 0.0
-                ldlsftf, smask = get_fiber_to_fiber(avg, E[li:hi], wave)
-                avg[avg == 0.] = np.nan
-                avg = avg / ldlsftf
-                avgspec = np.nanmedian(avg, axis=0)
-                div = avg / avgspec[np.newaxis, :]
-                ftf[li:hi] *= div
+                try:
+                    ldlsftf, smask = get_fiber_to_fiber(avg, E[li:hi], wave)
+                    
+                    avg[avg == 0.] = np.nan
+                    avg = avg / ldlsftf
+                    avgspec = np.nanmedian(avg, axis=0)
+                    div = avg / avgspec[np.newaxis, :]
+                    ftf[li:hi] *= div
+                except:
+                    ldls.log.warning('Could not use LDLS for %s' % ifuslot)
             for sciRaw in self.sciRaw_list:
                 sciRaw.info[ifuslot].ftf = ftf[li:hi]
                 sciRaw.info[ifuslot].data /= ftf[li:hi]
