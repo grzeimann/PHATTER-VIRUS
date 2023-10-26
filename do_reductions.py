@@ -90,7 +90,7 @@ def find_calibration_exposures(Obj_row, Obj_Table, cal='Hg',
     
     cal_obs = []
     for key, value, time_diff in zip(keys, values, time_diffs):
-        if value == cal:
+        if cal in value.lower():
             if np.abs(time_diff.value * 24.) < time_constraint:
                 cal_obs.append(key)
     
