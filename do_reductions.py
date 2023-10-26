@@ -118,7 +118,7 @@ parser.add_argument('outname', type=str,
                     help='''name appended to shift output''')
 
 parser.add_argument('target', type=str,
-                    help=''name of the target for reduction''')
+                    help='''name of the target for reduction''')
 
 parser.add_argument('--basedir', type=str,
                     help='''name appended to shift output''',
