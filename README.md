@@ -12,6 +12,7 @@ pip3 install astropy --user
 pip3 install seaborn --user
 pip3 install specutils --user
 pip3 install scikit-learn --user
+pip install --user --extra-index-url https://gate.mpe.mpg.de/pypi/simple/ pyhetdex
 cd /work/NUMBER/NAME/ls6
 git clone https://github.com/grzeimann/PHATTER-VIRUS.git
 ```
