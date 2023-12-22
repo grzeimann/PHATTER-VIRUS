@@ -121,8 +121,10 @@ def get_fibernorm(twi, bins=25):
     rho = virus.info[ifuslot].header['RHO_STRT']
     the = virus.info[ifuslot].header['THE_STRT']
     phi = virus.info[ifuslot].header['PHI_STRT']
+    hum = virus.info[ifuslot].header['HUMIDITY']
+    temp = virus.info[ifuslot].header['AMBTEMP']
     virus.log.info('Shifts finished %s_%07d_exp%02d' % (date, obs, exp))
-    return twi_dictionary, timeobs, rho, the, phi
+    return twi_dictionary, timeobs, rho, the, phi, hum, temp
 
 
 P = Pool(16)
@@ -137,11 +139,15 @@ time_list = [r[1] for r in res]
 rho_list = [r[2] for r in res]
 the_list = [r[3] for r in res]
 phi_list = [r[4] for r in res]
+hum_list = [r[5] for r in res]
+temp_list = [r[6] for r in res]
 for ifuslot in ifuslots:
     name = 'fibernormalization_model_%s_%s.fits' % (ifuslot, args.outname)
     f  = fits.HDUList([fits.PrimaryHDU(), fits.ImageHDU(twi_dictionary[ifuslot]),
                        fits.ImageHDU(np.array([t.mjd for t in time_list])),
                        fits.ImageHDU(np.array([t for t in rho_list])),
                        fits.ImageHDU(np.array([t for t in the_list])),
-                       fits.ImageHDU(np.array([t for t in phi_list]))])
+                       fits.ImageHDU(np.array([t for t in phi_list])),
+                       fits.ImageHDU(np.array([t for t in hum_list])),
+                       fits.ImageHDU(np.array([t for t in temp_list]))])
     f.writeto(name, overwrite=True)
