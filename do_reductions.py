@@ -21,6 +21,7 @@ from astropy.io import fits
 from multiprocessing import Pool
 
 from virusraw import VIRUSRaw
+from virusobs import VIRUSObs
 
 # =============================================================================
 # Warning Suppression: good for clarity, bad for debugging
@@ -89,12 +90,20 @@ def find_calibration_exposures(Obj_row, Obj_Table, cal='Hg',
     
     cal_obs = []
     for key, value, time_diff in zip(keys, values, time_diffs):
-        if value == cal:
+        if cal in value.lower():
             if np.abs(time_diff.value * 24.) < time_constraint:
                 cal_obs.append(key)
     
     
     return cal_obs
+
+def reduce(key, h5table, basepath=None, ifuslots=None):
+    date = key[:8]
+    obs = int(key[8:15])
+    exp = int(key[15:])
+    virus = VIRUSRaw(date, obs, h5table, exposure_number=exp, basepath=basepath, ifuslots=ifuslots)
+    return virus
+
 
 
 parser = ap.ArgumentParser(add_help=True)
@@ -107,6 +116,9 @@ parser.add_argument('hdf5file', type=str,
 
 parser.add_argument('outname', type=str,
                     help='''name appended to shift output''')
+
+parser.add_argument('target', type=str,
+                    help='''name of the target for reduction''')
 
 parser.add_argument('--basedir', type=str,
                     help='''name appended to shift output''',
@@ -146,18 +158,37 @@ T = Table.read(args.object_table, format='ascii.fixed_width_two_line')
 keys = list([str(t) for t in T['Exposure']])
 values = list(T['Description'])
 
-sci_obs = [key for key, value in zip(keys, values) if value == 'm33']
+target_name = args.target
 
+sci_obs = [key for key, value in zip(keys, values) if target_name in value.lower()]
+sci_inds = [j for key, value, j in zip(keys, values, np.arange(len(keys))) if target_name in value.lower()]
+sci_unique_obs, uinds = np.unique([sci_o[:-2] for sci_o in sci_obs], return_index=True)
+sci_unique_inds = np.array(sci_inds)[uinds]
 
-
-twi_obs = [key for key, value in zip(keys, values) if value == 'skyflat']
-CdA_obs = [key for key, value in zip(keys, values) if value == 'Cd-A']
-Hg_obs = [key for key, value in zip(keys, values) if value == 'Hg']
-Dark_obs = [key for key, value in zip(keys, values) if value == 'dark']
-LDLS_obs = [key for key, value in zip(keys, values) if value == 'ldls_long']
-
-date = arc[:8]
-obs = int(arc[8:15])
-exp = int(arc[15:])
-virus = VIRUSRaw(date, obs, h5table, basepath=basedir, exposure_number=exp,
-                 ifuslots=ifuslots)
+for sciind in sci_unique_inds:
+    twi_obs = find_calibration_exposures(T[sciind], T, cal='skyflat', time_constraint=12.)
+    twi_list = []
+    for twio in twi_obs:
+        twi_list.append(reduce(twio, h5table, basepath=basedir, ifuslots=ifuslots))
+    CdA_obs = find_calibration_exposures(T[sciind], T, cal='CdA', time_constraint=12.)
+    CdA_list = []
+    for CdAo in CdA_obs:
+        CdA_list.append(reduce(CdAo, h5table, basepath=basedir, ifuslots=ifuslots))
+    Hg_obs = find_calibration_exposures(T[sciind], T, cal='Hg', time_constraint=12.)
+    Hg_list = []
+    for Hgo in Hg_obs:
+        Hg_list.append(reduce(Hgo, h5table, basepath=basedir, ifuslots=ifuslots))
+    Dark_obs = find_calibration_exposures(T[sciind], T, cal='dark', time_constraint=12.)
+    Dark_list = []
+    for Darko in Dark_obs:
+        Dark_list.append(reduce(Darko, h5table, basepath=basedir, ifuslots=ifuslots))
+    LDLS_obs = find_calibration_exposures(T[sciind], T, cal='ldls_long', time_constraint=12.)
+    LDLS_list = []
+    for LDLSo in LDLS_obs:
+        LDLS_list.append(reduce(LDLSo, h5table, basepath=basedir, ifuslots=ifuslots))
+    VIRUS1 = reduce(keys[sciind], h5table, basepath=basedir, ifuslots=ifuslots)
+    VIRUS2 = reduce(keys[sciind+1], h5table, basepath=basedir, ifuslots=ifuslots)
+    VIRUS3 = reduce(keys[sciind+2], h5table, basepath=basedir, ifuslots=ifuslots)
+    SCIENCE = VIRUSObs([VIRUS1, VIRUS2, VIRUS3],
+                       arcRaw_list=Hg_list+CdA_list, DarkRaw_list=Dark_list,
+                       twiRaw_list=twi_list, LDLSRaw_list=LDLS_list, dither_index=[0, 1, 2])
