@@ -109,7 +109,7 @@ def get_shift(flt):
         yran = np.arange(current_observation.shape[0])
         xran = np.arange(current_observation.shape[1])
         for fiber in np.arange(448):
-            fit_waves = [np.abs(virus.info[ifuslot].wavelength[fiber] - line) <= 20. for line in x_list]
+            fit_waves = [np.abs(xran - line) <= 20. for line in x_list]
             for j, waverange in enumerate(fit_waves):
                 trace_range = np.abs(trace[fiber, int(x_list[j])] - yran) < 4.
                 X = np.nanmedian(current_observation[:, waverange], axis=1)
