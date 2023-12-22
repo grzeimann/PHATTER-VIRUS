@@ -115,11 +115,11 @@ def get_shift(flt):
                 X = np.nanmedian(current_observation[:, waverange], axis=1)
                 Y = np.nanmedian(monthly_average[:, waverange], axis=1)
                 if np.nanmax(X[trace_range]) > thresh:
-			FFT = phase_cross_correlation(X[trace_range][:, np.newaxis],
+		    FFT = phase_cross_correlation(X[trace_range][:, np.newaxis],
                                                   Y[trace_range][:, np.newaxis], 
                                                   normalization=None, upsample_factor=100)
-			shifts[fiber, j] = FFT[0][0]
-			virus.log.info('FFT for ifuslot %s, fiber %i: %0.2f, %0.2f' % (ifuslot, fiber, FFT[0][0], FFT[0][1])
+		    shifts[fiber, j] = FFT[0][0]
+		    virus.log.info('FFT for ifuslot %s, fiber %i: %0.2f, %0.2f' % (ifuslot, fiber, FFT[0][0], FFT[0][1])
         shift_dictionary[ifuslot] = shifts
     timeobs = Time(virus.info[ifuslot].header['DATE'])
     hum = virus.info[ifuslot].header['HUMIDITY']
