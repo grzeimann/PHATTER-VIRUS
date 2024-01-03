@@ -105,7 +105,7 @@ def get_shift(flt):
             continue
         current_observation[np.isnan(current_observation)] = 0.0
         trace = virus.info[ifuslot].trace * 1.
-        shifts = np.ones((current_observation.shape[0], len(x_list))) * np.nan
+        shifts = np.zeros((current_observation.shape[0], len(x_list)))
         yran = np.arange(current_observation.shape[0])
         xran = np.arange(current_observation.shape[1])
         for fiber in np.arange(448):
