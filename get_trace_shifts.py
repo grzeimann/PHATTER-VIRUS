@@ -140,8 +140,11 @@ hum_list = [r[2] for r in res]
 temp_list = [r[3] for r in res]
 for ifuslot in ifuslots:
     name = 'trace_shifts_%s_%s.fits' % (ifuslot, args.outname)
-    f  = fits.HDUList([fits.PrimaryHDU(), fits.ImageHDU(shift_dictionary[ifuslot]),
-                       fits.ImageHDU(np.array([t.mjd for t in time_list])),
-                       fits.ImageHDU(np.array([t for t in hum_list])),
-                       fits.ImageHDU(np.array([t for t in temp_list]))])
-    f.writeto(name, overwrite=True)
+    try:
+        f  = fits.HDUList([fits.PrimaryHDU(), fits.ImageHDU(shift_dictionary[ifuslot]),
+                           fits.ImageHDU(np.array([t.mjd for t in time_list])),
+                           fits.ImageHDU(np.array([t for t in hum_list])),
+                           fits.ImageHDU(np.array([t for t in temp_list]))])
+        f.writeto(name, overwrite=True)
+    except:
+        print('Failed making %s' %name)
