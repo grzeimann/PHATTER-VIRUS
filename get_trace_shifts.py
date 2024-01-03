@@ -95,7 +95,7 @@ def get_shift(flt):
                      ifuslots=ifuslots, lightmode=False)
     shift_dictionary = {}
     for ifuslot in ifuslots:
-        shift_dictionary[ifuslot] = np.nan * np.ones((448, len(x_list)))
+        shift_dictionary[ifuslot] = np.zeros((448, len(x_list)))
     for ifuslot in ifuslots:
         try:
             monthly_average = virus.info[ifuslot].masterflt * 1.
@@ -132,7 +132,7 @@ res = P.map(get_shift, flt_list)
 P.close()
 shift_dictionary = {}
 for ifuslot in ifuslots:
-    shift_dictionary[ifuslot] = np.nan * np.ones((len(flt_list), 448, len(x_list)))
+    shift_dictionary[ifuslot] = np.zeros((len(flt_list), 448, len(x_list)))
 for ifuslot in ifuslots:  
     shift_dictionary[ifuslot] = [r[0][ifuslot] for r in res]
 time_list = [r[1] for r in res]
